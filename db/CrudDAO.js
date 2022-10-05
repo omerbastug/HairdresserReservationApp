@@ -26,21 +26,27 @@ export function sqlquery (q,params,callback) {
 export const getDao = (tablename,pk ) => {
     return {
         getByParam:  (params,callback, sort = '"createdAt"') => {
-            let q = "SELECT * FROM " + tablename;
+            let q = "SELECT * FROM " + tablename+"    ";
             let array = [];
             //console.log(params);
-            if(!_.isEmpty(params)){
-                q+=" WHERE    ";
-                let i = 1;
-                Object.keys(params).forEach(function(key) {
-                    var value = params[key];
-                    //console.log(key, value);
-                    q += `"${key}" = $${i} AND `;
+            q+=" WHERE";
+            let i = 1;
+            Object.keys(params).forEach(function(key) {
+                var value = params[key];
+                //console.log(key, value);
+                if(value) {
+                    q += ` "${key}" = $${i} AND `;
                     array[i-1] = value;
                     i++;
-                });
-                q = q.substring(0, q.length - 4);
-                q+=" ORDER BY "+sort;
+                }
+            });
+            if(i==1){
+                q = q.substring(0, q.length - 5);
+            } else {
+                q = q.substring(0, q.length - 4); 
+            }
+            if(sort != null) {
+                q+=" ORDER BY "+sort+" desc";
             }
             //console.log(q, array);
             sqlquery(q,array, callback)
@@ -54,17 +60,19 @@ export const getDao = (tablename,pk ) => {
             Object.keys(fields).forEach(function(key) {
                 var value = fields[key];
                 //console.log(key, value);
-                q += `"${key}" , `;
-                values[i] = value;
-                i++;
+                if(value) {
+                    q += ` "${key}" , `;
+                    values[i] = value;
+                    i++;
+                }
             });
             q= q.substring(0,q.length -2);
             q+= ") values ( ";
             for(let i = 0; i<values.length;i++){
-                q+= "$"+(i+1)+" ,";
+                q+= " $"+(i+1)+" ,";
             }
             q = q.substring(0,q.length -1);
-            q+=")";
+            q+=" ) ";
             sqlquery(q,values,callback);
         },
         delete: (params,callback) => {
@@ -74,9 +82,11 @@ export const getDao = (tablename,pk ) => {
             Object.keys(params).forEach(function(key) {
                 var value = params[key];
                 //console.log(key, value);
-                q += `"${key}" = $${i} AND `;
-                array[i-1] = value;
-                i++;
+                if(value) {
+                    q += ` "${key}" = $${i} AND `;
+                    array[i-1] = value;
+                    i++;
+                }
             });
             q = q.substring(0, q.length - 4);
             q+=` ORDER BY "${pk}" DESC LIMIT 1) RETURNING ${pk}`
@@ -89,20 +99,29 @@ export const getDao = (tablename,pk ) => {
             Object.keys(updates).forEach(function(key) {
                 var value = updates[key];
                 //console.log(key, value);
-                q += `"${key}" = $${i} , `;
-                array[i-1] = value; 
-                i++;
+                if(value) {
+                    q += ` "${key}" = $${i} , `;
+                    array[i-1] = value; 
+                    i++;
+                }
             });
             q = q.substring(0, q.length - 2);
-            q+= ` WHERE `;
+            q+= ` WHERE`;
+            let j = i;
             Object.keys(params).forEach(function(key) {
                 var value = params[key];
                 //console.log(key, value);
-                q += `"${key}" = $${i} AND `;
-                array[i-1] = value;
-                i++;
+                if(value) {
+                    q += ` "${key}" = $${i} AND `;
+                    array[j-1] = value;
+                    j++;
+                }
             });
-            q = q.substring(0, q.length - 4);
+            if(j==i){
+                q = q.substring(0, q.length - 5);
+            } else {
+                q = q.substring(0, q.length - 4);
+            }
             q += " RETURNING "+pk;
             sqlquery(q,array,callback)
         }

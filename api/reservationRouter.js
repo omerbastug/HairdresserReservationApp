@@ -1,9 +1,8 @@
-import { json, Router } from "express";
-import {updateReservation ,deleteReservation, addReservation,getByParam } from "../services/reservationService.js";
+import { Router } from "express";
+import {updateReservation ,deleteReservation, addReservation,getResByParam } from "../services/reservationService.js";
 export const resrouter = Router();
-resrouter.use(json())
 
-resrouter.get("/:user_id?", getByParam)
+resrouter.get("/:user_id?", getResByParam)
 
 resrouter.post("/",addReservation)
 

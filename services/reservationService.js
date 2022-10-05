@@ -1,13 +1,14 @@
 import {getDao} from "../db/CrudDAO.js";
 import _ from "lodash";
-const tablename = "reservation";
+import {dateToString} from "./date/dbformat.js"
+const tablename = "reservations";
 const pk = "datetime";
 
 const resDao = getDao(tablename,pk);
 
-export function getByParam(req,res){
-    let params = {};
-    if(req.body) params = req.body;
+export function getResByParam(req,res){
+    let {datetime,createdAt,user_id} = req.body;
+    let params = {datetime,createdAt,user_id};
     if(req.params.user_id){ params.user_id = req.params.user_id}
     if(params.datetime){
         let x = new Date(params.datetime);
@@ -30,7 +31,7 @@ export function getByParam(req,res){
                 if(_.isEmpty(params)){
                     return res.json({allreservations : data.rows})
                 }
-                let response = {date : new Date(data.rows[0].datetime).toUTCString()};
+                let response = {reservations : data.rows};
                 res.json(response);
             } else {
                 res.status(400).json({"err":"not found"})
@@ -40,7 +41,8 @@ export function getByParam(req,res){
 }
 
 export function addReservation(req,res){
-    let fields = req.body;
+    let {datetime,user_id} = req.body;
+    let fields = {datetime,user_id}
     fields.datetime = dateToString(new Date(fields.datetime));
     resDao.add(fields,(err,data)=>{
         if(err){
@@ -54,21 +56,20 @@ export function addReservation(req,res){
 }
 
 export function deleteReservation(req,res){
-    let params = {};
-
-    if(req.body.user_id){ params.user_id = req.body.user_id}
-
-    if(req.body.datetime){
-        let x = new Date(req.body.datetime);
-        if (x instanceof Date && !isNaN(x)) {
-            params.datetime = dateToString(x);
-        }
-    }
-
-    if(_.isEmpty(params)){
+    let {datetime,user_id} = req.body;
+    if(!datetime && !user_id){
         return res.status(400).json({
             "err":"enter user_id or date of reservation in the body"
         })
+    }
+
+    let params = {datetime,user_id};
+
+    if(datetime){
+        let x = new Date(datetime);
+        if (x instanceof Date && !isNaN(x)) {
+            params.datetime = dateToString(x);
+        }
     }
 
     resDao.delete(params,(err,data)=>{
@@ -111,10 +112,4 @@ export function updateReservation(req,res){
             res.json({"success":"Updated",datetime : data.rows[0].datetime})
         }
     })
-
-}
-
-function pad2(n) { return n < 10 ? '0' + n : n }
-function dateToString(date){
-    return date.getFullYear().toString()+ "-" + pad2(date.getMonth() + 1)+ "-" + pad2( date.getDate())+ " " + pad2( date.getHours() ) +":"+ pad2( date.getMinutes() ) +":"+ pad2( date.getSeconds() )+".000000";
 }
