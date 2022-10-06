@@ -72,7 +72,7 @@ export const getDao = (tablename,pk ) => {
                 q+= " $"+(i+1)+" ,";
             }
             q = q.substring(0,q.length -1);
-            q+=" ) ";
+            q+=" ) RETURNING "+pk;
             sqlquery(q,values,callback);
         },
         delete: (params,callback) => {

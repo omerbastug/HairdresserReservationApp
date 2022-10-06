@@ -60,7 +60,8 @@ export async function addUser(req,res) {
         if(err){
             return res.status(500).json({"err":"db generated error"})
         }
-        var token = jwt.sign({ user: user }, process.env.JWT_SECRET);
+        let dbuser = data.rows[0];
+        var token = jwt.sign({ user: {id : dbuser.id, role_id : 1, email: user.email} }, process.env.JWT_SECRET);
         res.json({token});
     })
 }
