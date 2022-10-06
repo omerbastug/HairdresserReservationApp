@@ -44,6 +44,11 @@ export function addReservation(req,res){
     let {datetime,user_id} = req.body;
     let fields = {datetime,user_id}
     fields.datetime = dateToString(new Date(fields.datetime));
+    const authUser = JSON.parse(res.get("user"));
+    //console.log(authUser);
+    if(authUser.role_id == 1){
+        fields.user_id = authUser.id;
+    }
     resDao.add(fields,(err,data)=>{
         if(err){
             console.log(err);
@@ -64,7 +69,11 @@ export function deleteReservation(req,res){
     }
 
     let params = {datetime,user_id};
-
+    const authUser = JSON.parse(res.get("user"));
+    //console.log(authUser);
+    if(authUser.role_id == 1){
+        params.user_id =  authUser.id
+    }
     if(datetime){
         let x = new Date(datetime);
         if (x instanceof Date && !isNaN(x)) {
