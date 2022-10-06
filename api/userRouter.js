@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { getUserByParam, addUser, deleteUser ,updateUser, login } from "../services/userService.js";
+import { getUserByParam, addUser, deleteUser ,updateUser, login, isUser } from "../services/userService.js";
 export const userrouter = Router();
 
-userrouter.get("/:id?", getUserByParam);
+userrouter.get("/:id?", isUser, getUserByParam);
 
 userrouter.post("/", addUser)
 
-userrouter.delete("/", deleteUser)
+userrouter.delete("/", isUser, deleteUser)
 
-userrouter.patch("/", updateUser)
+userrouter.patch("/", isUser, updateUser)
 
 userrouter.post("/login", login)

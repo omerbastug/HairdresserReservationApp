@@ -22,6 +22,11 @@ export function getUserByParam(req,res){
             params.createdAt = dateToString(x);
         }
     }
+    const authUser = JSON.parse(res.get("user"));
+    //console.log(authUser);
+    if(authUser.role_id == 1){
+        params = { id : authUser.id}
+    }
     userDao.getByParam(params, (err, data)=>{
         if(err){
             console.log(err);
@@ -66,7 +71,11 @@ export function deleteUser(req,res){
         return res.status(400).json({"err":"no valid parameters"})
     }
     let params = {id,fullname,email,role_id};
-
+    const authUser = JSON.parse(res.get("user"));
+    //console.log(authUser);
+    if(authUser.role_id == 1){
+        params = { id : authUser.id}
+    }
     userDao.delete(params, (err,data)=>{
         if(err){
             console.log(err);
@@ -101,6 +110,11 @@ export async function updateUser(req,res){
         email : req.body.params.email,
         fullname : req.body.params.fullname
     }
+    const authUser = JSON.parse(res.get("user"));
+    //console.log(authUser);
+    if(authUser.role_id == 1){
+        params = { id : authUser.id}
+    }
     userDao.update(updates,params,(err,data)=>{
         if(err){
             console.log(err);
@@ -132,7 +146,20 @@ export function login(req,res){
         if(hash != dbuser.hash){
             return res.status(400).json({"err":"incorrect password"})
         }
-        var token = jwt.sign({ user: dbuser }, process.env.JWT_SECRET);
+        var token = jwt.sign({ user: {id : dbuser.id, role_id : dbuser.role_id, email: dbuser.email} }, process.env.JWT_SECRET);
         res.status(201).json({token})
     })
+}
+
+export function isUser(req,res,next){
+    const token = req.headers["authorization"];
+    let decoded;
+    try {
+        decoded =  jwt.verify(token, process.env.JWT_SECRET);
+    } catch {
+        return res.status(401).json({"err":"unauthorized"})
+    }
+    //console.log("jwt",decoded.user);
+    res.set("user",JSON.stringify(decoded.user));
+    next();
 }
