@@ -2,7 +2,10 @@ import { getDao } from "../db/CrudDAO.js";
 import {dateToString} from "./date/dbformat.js"
 import crypto from "crypto";
 import EmailValidator from "email-deep-validator";
- 
+import jwt from "jsonwebtoken";
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 const emailValidator = new EmailValidator();
 let tablename = "users";
 let pk = "id";
@@ -52,9 +55,8 @@ export async function addUser(req,res) {
         if(err){
             return res.status(500).json({"err":"db generated error"})
         }
-        delete user.salt;
-        delete user.hash;
-        res.json({success:"created user",user});
+        var token = jwt.sign({ user: user }, process.env.JWT_SECRET);
+        res.json({token});
     })
 }
 
@@ -110,5 +112,27 @@ export async function updateUser(req,res){
 
             res.json({"success":"Updated",rows : data.rows})
         }
+    })
+}
+
+export function login(req,res){
+    let {email,password} = req.body;
+    let params = {email};
+
+    userDao.getByParam(params, (err,data) => {
+        if(err){
+            console.log(err);
+            return res.sendStatus(500)
+        }
+        if(data.rowCount == 0){
+            return res.status(400).json({"err":"user not found"});
+        }
+        let dbuser = data.rows[0];
+        let hash = crypto.pbkdf2Sync(password, dbuser.salt, 1000, 64, `sha512`).toString(`hex`);        
+        if(hash != dbuser.hash){
+            return res.status(400).json({"err":"incorrect password"})
+        }
+        var token = jwt.sign({ user: dbuser }, process.env.JWT_SECRET);
+        res.status(201).json({token})
     })
 }
