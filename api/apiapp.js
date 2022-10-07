@@ -12,3 +12,7 @@ app.use((req,res,next)=>{
 app.use("/reservation",resrouter);
 app.use("/user/",userrouter);
 app.use("/post", postRouter)
+
+app.get("/",(req,res)=>{
+    res.send("Testing..")
+})
