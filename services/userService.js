@@ -164,3 +164,13 @@ export function isUser(req,res,next){
     res.set("user",JSON.stringify(decoded.user));
     next();
 }
+
+export function isAdmin(req,res,next){
+    const user = JSON.parse(res.get("user"));
+    if(user.role_id == 2){
+        console.log("Admin access");
+        next()
+    } else {
+        return res.status(403).json({"err":"forbidden"})
+    }
+}
