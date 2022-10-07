@@ -158,10 +158,17 @@ export function isUser(req,res,next){
     try {
         decoded =  jwt.verify(token, process.env.JWT_SECRET);
     } catch {
+        if(res.get("notstrict")){
+            return next();
+        }
         return res.status(401).json({"err":"unauthorized"})
     }
     //console.log("jwt",decoded.user);
     res.set("user",JSON.stringify(decoded.user));
+    next();
+}
+export function notStrict(req,res,next){
+    res.set("notstrict", true)
     next();
 }
 
