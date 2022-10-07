@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { postImage , getPosts, deletePost} from "../services/postService.js";
+import { postImage , getPosts, deletePost, updateHomepage} from "../services/postService.js";
 import { notStrict, isUser, isAdmin} from "../services/userService.js"
 
 const storage = multer.memoryStorage()
@@ -13,3 +13,5 @@ postRouter.post("/", isUser, isAdmin, upload.single("image"), postImage)
 postRouter.get("/", notStrict, isUser, getPosts)
 
 postRouter.delete("/", isUser, isAdmin, deletePost)
+
+postRouter.patch("/homepage/switch",isUser,isAdmin,updateHomepage)

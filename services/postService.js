@@ -4,7 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import * as dotenv from 'dotenv';
 dotenv.config()
 import crypto from "crypto";
-import { getDao } from "../db/CrudDAO.js";
+import { getDao, sqlquery } from "../db/CrudDAO.js";
 import { url } from "inspector";
 
 const s3 = new S3Client({
@@ -104,5 +104,24 @@ export function deletePost(req,res){
         }
         //console.log(data.rows);
         res.json({"deletedRows": data.rows})
+    })
+}
+
+export function updateHomepage(req,res){
+    let IDs = req.body.ids;
+    let q = `UPDATE posts SET "homepage" = NOT "homepage" WHERE "id" IN (`;
+    for(let i = 0; i<IDs.length; i++){
+        q+= ` $${i+1} ,`
+    }
+    q = q.substring(0,q.length-1) + " )";
+    sqlquery(q,IDs,(err,data)=>{
+        if(err){
+            console.log(err);
+            return
+        }
+        if(data.rowCount==0){
+            return res.status(400).json({err:"rows not found"})
+        }
+        res.json({"success":"rows updated"})
     })
 }
