@@ -60,6 +60,20 @@ export function getPosts(req,res){
         if(data.rowCount == 0 ){
             return res.json({"err":"no rows found"})
         }
-        res.json({posts: data.rows})
+        let posts = data.rows;
+        let calls = new Array()
+        for(let i = 0; i<posts.length; i++){
+            let getObjectParams = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: posts[i].id
+            }
+            const command = new GetObjectCommand(getObjectParams);
+            calls[i] = getSignedUrl(s3, command);
+        }
+        let urls = await Promise.all(calls);
+        for(let i = 0; i<urls.length; i++){
+            posts[i].url = urls[i] 
+        }
+        res.json({posts: posts})
     })
 }
