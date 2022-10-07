@@ -45,3 +45,21 @@ async function addToDB(post){
         //console.log(data.rows[0]);
     })
 }
+
+export function getPosts(req,res){
+    let {id,likecount,name,homepage} = req.body;
+    let params = {id,likecount,name,homepage};
+    if(!res.get("user") || JSON.parse(res.get("user")).role_id == 1){
+        params.homepage = true;
+    }
+    postDao.getByParam(params,(err,data)=>{
+        if(err){
+            console.log(err);
+            return res.status(500).json({err:"db error"})
+        }
+        if(data.rowCount == 0 ){
+            return res.json({"err":"no rows found"})
+        }
+        res.json({posts: data.rows})
+    })
+}
