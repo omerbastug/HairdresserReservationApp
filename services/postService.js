@@ -125,3 +125,42 @@ export function updateHomepage(req,res){
         res.json({"success":"rows updated"})
     })
 }
+
+export function likePost(req,res){
+    let postid = req.body.post_id;
+    let userid = JSON.parse(res.get("user")).id;
+    let params = {postid,userid}
+    postDao.getByParam({id:postid},(err,data)=>{
+        if(err){
+            console.log(err);
+            return res.status(500).json({err:"db generated error"})
+        }
+        if(data.rowCount == 0){
+            return res.status(400).json({err:"post not found"})
+        }
+        if(!data.rows[0].homepage){
+            return res.status(403).json({err:"forbidden"})
+        }
+        let q= `INSERT INTO likes (post_id,user_id) values ( $1 , $2 ) RETURNING user_id`
+        sqlquery(q,[postid,userid],(err,data)=>{
+            if(err){
+                console.log(err);
+                return res.status(400).json({err:"post already liked"})
+            }
+            res.json({success:"post liked"})
+        })
+    })
+}
+
+export function removeLike(req,res){
+    let postid = req.body.post_id;
+    let userid = JSON.parse(res.get("user")).id;
+    let q = `DELETE FROM likes WHERE post_id = $1 AND user_id = $2 RETURNING post_id`
+    sqlquery(q, [postid,userid],(err,data)=>{
+        if(err){
+            console.log(err);
+            return res.status(400).json({err:"bad request"})
+        }
+        res.json({success: "like deleted"})
+    })
+}
