@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.185.0",
+    "@aws-sdk/s3-request-presigner": "^3.186.0",
     "crypto": "^1.0.1",
     "dotenv": "^16.0.3",
     "email-deep-validator": "^3.3.0",

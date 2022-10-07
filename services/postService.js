@@ -1,9 +1,11 @@
 import multer from "multer";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import * as dotenv from 'dotenv';
 dotenv.config()
 import crypto from "crypto";
 import { getDao } from "../db/CrudDAO.js";
+import { url } from "inspector";
 
 const s3 = new S3Client({
     credentials : {
@@ -50,9 +52,14 @@ export function getPosts(req,res){
     let {id,likecount,name,homepage} = req.body;
     let params = {id,likecount,name,homepage};
     if(!res.get("user") || JSON.parse(res.get("user")).role_id == 1){
-        params.homepage = true;
+        params = {homepage: true}
     }
-    postDao.getByParam(params,(err,data)=>{
+    // implement redis cache / store homepage array in cache
+    if(params.homepage && !params.id && !params.likecount && !params.name){
+
+    }
+
+    postDao.getByParam(params,async (err,data)=>{
         if(err){
             console.log(err);
             return res.status(500).json({err:"db error"})
@@ -75,5 +82,27 @@ export function getPosts(req,res){
             posts[i].url = urls[i] 
         }
         res.json({posts: posts})
+    })
+}
+
+export function deletePost(req,res){
+    postDao.delete(req.body,async (err,data)=>{
+        if(err){
+            console.log(err);
+            return res.json({"err":"db generated error"})
+        }
+        if(data.rowCount==0){
+            return res.status(400).json({"err":"rows not found"})
+        }
+        for(let i = 0; i<data.rows.length; i++){
+            let deleteObjectParams = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: data.rows[i].id
+            }
+            const command = new DeleteObjectCommand(deleteObjectParams);
+            s3.send(command);
+        }
+        //console.log(data.rows);
+        res.json({"deletedRows": data.rows})
     })
 }
