@@ -1,7 +1,7 @@
 import { app } from "./api/apiapp.js";
 
 
-app.listen(4562, ()=>{
+app.listen(process.env.PORT, ()=>{
     console.log("Server started on",4562);
 });
 
