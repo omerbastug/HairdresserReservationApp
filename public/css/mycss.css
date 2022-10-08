@@ -1,0 +1,23 @@
+.bg-main {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5) )
+    ,url('../../static/section.webp');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.h1-font-color {
+    font-family: 'Roboto', sans-serif;
+    color: #eae0d5;
+}
+
+.main-desc {
+    font-family: 'Roboto', sans-serif;
+    color: #c6ac8f;
+}
+
+.posts-container{
+    background-color: #eae0d5!important;
+    margin: 0 5%;
+    border-radius: 25px;
+}

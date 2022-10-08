@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv';
 dotenv.config()
 import crypto from "crypto";
 import { getDao, sqlquery } from "../db/CrudDAO.js";
-import { url } from "inspector";
+import sharp from "sharp";
 
 const s3 = new S3Client({
     credentials : {
@@ -21,6 +21,7 @@ function generatePostID(){
 
 export async function postImage(req,res){
     const file = req.file;
+    file.buffer = await sharp(req.file.buffer).resize({ width: 320, height : 480 }).toBuffer()
     const id = generatePostID();
     const params = {
         Bucket : process.env.BUCKET_NAME,
