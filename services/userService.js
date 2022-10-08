@@ -46,7 +46,7 @@ export async function addUser(req,res) {
 
     // could do this in frontend and check for flag with a secret
     if(!wellFormed || !validDomain || !validMailbox ) {
-        return res.status(400).json({"err":"invalid email"})
+        return res.status(400).json({"err":"invalid email",wellFormed,validDomain,validMailbox})
     }
     let salt = crypto.randomBytes(16).toString('hex');
     let hash = crypto.pbkdf2Sync(password, salt, 
