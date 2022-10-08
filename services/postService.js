@@ -5,8 +5,7 @@ import * as dotenv from 'dotenv';
 dotenv.config()
 import crypto from "crypto";
 import { getDao, sqlquery } from "../db/CrudDAO.js";
-import sharp from "sharp";
-
+import im from "imagemagick";
 const s3 = new S3Client({
     credentials : {
         accessKeyId : process.env.AWS_S3_ACCESS_KEY_ID,
@@ -21,7 +20,16 @@ function generatePostID(){
 
 export async function postImage(req,res){
     const file = req.file;
-    file.buffer = await sharp(req.file.buffer).resize({ width: 320, height : 480 }).toBuffer()
+    await im.resize({
+        srcData: req.file.buffer,
+        width:   320,
+        height: 480
+      }, function(err, stdout, stderr){
+        if (err)  console.log(err);
+        else {
+            file.buffer = stdout    
+        }
+      });
     const id = generatePostID();
     const params = {
         Bucket : process.env.BUCKET_NAME,
