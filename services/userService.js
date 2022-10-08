@@ -42,7 +42,7 @@ export function getUserByParam(req, res) {
 
 export function addUser(req, res) {
     let { fullname, email, password } = req.body;
-    emailValidator.verify(email).then(data => {
+    emailValidator.verify(email,20000).then(data => {
         const { wellFormed, validDomain, validMailbox } = data;
         // could do this in frontend and check for flag with a secret
         if (!wellFormed || !validDomain || !validMailbox) {
@@ -62,8 +62,6 @@ export function addUser(req, res) {
             res.json({ token });
         })
     });
-
-
 }
 
 export function deleteUser(req, res) {
