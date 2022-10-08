@@ -1,12 +1,13 @@
 import { getDao } from "../db/CrudDAO.js";
 import { dateToString } from "./date/dbformat.js"
 import crypto from "crypto";
-import EmailValidator from "email-deep-validator";
+//import EmailValidator from "email-deep-validator";
+import {validate} from 'deep-email-validator'
 import jwt from "jsonwebtoken";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const emailValidator = new EmailValidator();
+//const emailValidator = new EmailValidator();
 let tablename = "users";
 let pk = "id";
 
@@ -40,28 +41,25 @@ export function getUserByParam(req, res) {
     })
 }
 
-export function addUser(req, res) {
+export async function addUser(req, res) {
     let { fullname, email, password } = req.body;
-    emailValidator.verify(email,20000).then(data => {
-        const { wellFormed, validDomain, validMailbox } = data;
-        // could do this in frontend and check for flag with a secret
-        if (!wellFormed || !validDomain || !validMailbox) {
-            return res.status(400).json({ "err": "invalid email",/*wellFormed,validDomain,validMailbox*/data })
-        }
-        let salt = crypto.randomBytes(16).toString('hex');
-        let hash = crypto.pbkdf2Sync(password, salt,
-            1000, 64, `sha512`).toString(`hex`);
-        let user = { fullname, email, salt, hash };
+    let resp = await validate(email);
+    if (!resp.validators.smtp.valid) {
+        return res.status(400).json({ "err": "invalid email", resp  })
+    }
+    let salt = crypto.randomBytes(16).toString('hex');
+    let hash = crypto.pbkdf2Sync(password, salt,
+        1000, 64, `sha512`).toString(`hex`);
+    let user = { fullname, email, salt, hash };
 
-        userDao.add(user, (err, data) => {
-            if (err) {
-                return res.status(500).json({ "err": "db generated error" })
-            }
-            let dbuser = data.rows[0];
-            var token = jwt.sign({ user: { id: dbuser.id, role_id: 1, email: user.email } }, process.env.JWT_SECRET);
-            res.json({ token });
-        })
-    });
+    userDao.add(user, (err, data) => {
+        if (err) {
+            return res.status(500).json({ "err": "db generated error" })
+        }
+        let dbuser = data.rows[0];
+        var token = jwt.sign({ user: { id: dbuser.id, role_id: 1, email: user.email } }, process.env.JWT_SECRET);
+        res.json({ token });
+    })
 }
 
 export function deleteUser(req, res) {
