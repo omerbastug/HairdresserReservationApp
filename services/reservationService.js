@@ -1,4 +1,4 @@
-import {getDao} from "../db/CrudDAO.js";
+import {getDao, sqlquery} from "../db/CrudDAO.js";
 import _ from "lodash";
 import {dateToString} from "./date/dbformat.js"
 const tablename = "reservations";
@@ -6,6 +6,17 @@ const pk = "datetime";
 
 const resDao = getDao(tablename,pk);
 
+export function getSchedule(req,res){
+    let q = `SELECT * FROM reservations WHERE datetime > $1`
+    let params = [new Date()]
+    sqlquery(q,params,(err,data)=>{
+        if(err){
+            console.log(err);
+            return res.sendStatus(500)
+        }
+        res.json({rows : data.rows})
+    })
+}
 export function getResByParam(req,res){
     let {datetime,createdAt,user_id} = req.body;
     let params = {datetime,createdAt,user_id};
