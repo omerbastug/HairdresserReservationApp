@@ -1,13 +1,11 @@
 import { getDao } from "../db/CrudDAO.js";
 import { dateToString } from "./date/dbformat.js"
 import crypto from "crypto";
-//import EmailValidator from "email-deep-validator";
-import {validate} from 'deep-email-validator'
 import jwt from "jsonwebtoken";
 import * as dotenv from 'dotenv';
 dotenv.config();
+import axios from "axios";
 
-//const emailValidator = new EmailValidator();
 let tablename = "users";
 let pk = "id";
 
@@ -43,9 +41,13 @@ export function getUserByParam(req, res) {
 
 export async function addUser(req, res) {
     let { fullname, email, password } = req.body;
-    let resp = await validate(email);
-    if (!resp.validators.smtp.valid) {
-        return res.status(400).json({ "err": "invalid email", resp  })
+
+    let emailValidation = await axios.get(
+        `https://emailvalidation.abstractapi.com/v1/?api_key=${process.env.EMAIL_VALIDATION_API_KEY}&email=${email}`
+       );
+    //console.log(emailValidation.data);
+    if (emailValidation.data.deliverability === "UNDELIVERABLE") {
+        return res.status(400).json({ "err": "invalid email", err: emailValidation.data  })
     }
     let salt = crypto.randomBytes(16).toString('hex');
     let hash = crypto.pbkdf2Sync(password, salt,
