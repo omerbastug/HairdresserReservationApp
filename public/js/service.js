@@ -3,7 +3,7 @@ const Service = {
         $("#schedule").hide()
         let reservations;
         let call = $.ajax({
-            url : "http://localhost:4562/reservation/schedule",
+            url : "http://mybarbershop.us-east-1.elasticbeanstalk.com/reservation/schedule",
             success : (data) => {
                 console.log("retrieved schedule");
                 reservations = data.rows;
