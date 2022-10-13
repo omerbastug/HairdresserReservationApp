@@ -7,7 +7,7 @@ const pk = "datetime";
 const resDao = getDao(tablename,pk);
 
 export function getSchedule(req,res){
-    let q = `SELECT * FROM reservations WHERE datetime > $1`
+    let q = `SELECT * FROM reservations WHERE datetime > $1 ORDER BY datetime`
     let params = [new Date()]
     sqlquery(q,params,(err,data)=>{
         if(err){

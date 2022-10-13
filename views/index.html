@@ -7,19 +7,22 @@
     <title>My Barbershop</title>
     <link rel="icon" href="/static/logo.png" />
 
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <!-- Bootstrap  -->
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
     <script>
         console.log("testing");
     </script>
     <link rel="stylesheet" href="/static/css/mycss.css">
+    <script src="/static/js/service.js"></script>
+
 </head>
 <body>
-    
     <header>
       <div class="bg-dark collapse" id="navbarHeader">
         <div class="container">
@@ -61,7 +64,7 @@
           <div class="col-lg-6 col-md-8 mx-auto">
             <h1 class="fw-light h1-font-color">example</h1>
             <p class="lead main-desc">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
-            <button type="button" class="btn btn-warning my-1" style="font-size: 1.5rem;"> 
+            <button onclick="Service.showSchedule()" id="scheduleButton" type="button" class="btn btn-warning my-1" style="font-size: 1.5rem;"> 
                 Schedule 
                 <object style="width: 2rem;" type="image/svg+xml" data="/static/scissors.svg" class="logo">
                     Kiwi Logo <!-- fallback image in CSS -->
@@ -72,6 +75,9 @@
       </section>
     
       <div class="album py-5 bg-light posts-container">
+        <div class="container" id="schedule">
+
+        </div>
         <div class="container">
     
           <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="cardgroup">
@@ -146,13 +152,10 @@
         <p class="mb-1">Album example is © Bootstrap, but please download and customize it for yourself!</p>
         <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="/docs/5.0/getting-started/introduction/">getting started guide</a>.</p>
       </div>
-    </footer>
-    
-    
-        <script src="/docs/5.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    
+    </footer>    
           
-      
-    
     </body>
+    <script>
+      Service.schedule()
+    </script>
 </html>
