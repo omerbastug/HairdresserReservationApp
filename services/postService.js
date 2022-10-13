@@ -20,16 +20,16 @@ function generatePostID(){
 
 export async function postImage(req,res){
     const file = req.file;
-    await im.resize({
-        srcData: req.file.buffer,
-        width:   320,
-        height: 480
-      }, function(err, stdout, stderr){
-        if (err)  console.log(err);
-        else {
-            file.buffer = stdout    
-        }
-      });
+    // await im.resize({
+    //     srcData: req.file.buffer,
+    //     width:   320,
+    //     height: 480
+    //   }, function(err, stdout, stderr){
+    //     if (err)  console.log(err);
+    //     else {
+    //         file.buffer = stdout    
+    //     }
+    //   });
     const id = generatePostID();
     const params = {
         Bucket : process.env.BUCKET_NAME,

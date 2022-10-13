@@ -1,5 +1,5 @@
 const Service = {
-    schedule : () => {
+    schedule : async () => {
         $("#schedule").hide()
         let reservations;
         let call = $.ajax({
@@ -84,6 +84,40 @@ const Service = {
             $("#scheduleButton").attr("disabled","true").removeClass("btn-danger").addClass("btn-warning").removeAttr('disabled')
             $("#schedule").hide()
         }
+    },
+    showImages : ()=>{
+        $.ajax({
+            url : "http://mybarbershop.us-east-1.elasticbeanstalk.com/post/",
+            method : "GET",
+            success : (data) => {
+                console.log("retrieved schedule");
+                posts = data.posts;
+                console.log(posts);
+                let html = ""
+                for(let i = 0; i<posts.length; i++){
+                    const date1 = new Date(posts[i].createdAt);
+                    const date2 = new Date();
+                    const diffTime = Math.abs(date2 - date1);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    html += `<div class="col">
+                                <div class="card bg-dark text-white">
+                                    <img src="${posts[i].url}" alt="">
+                                    <!-- <p class="p-2 m-0 small">
+                                    Loading...
+                                    </p> -->
+                                    <div class="card-img-overlay ">
+                                        <div class="card-text position-absolute bottom-0 text-light w-100" style="margin-left: -16px; color: black;">
+                                            <p class="p-2 m-0 small">
+                                                ${diffDays} days ago
+                                            </p>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>`
+                }
+                $("#cardgroup").html(html)
+            }
+        })
     }
 }
 
