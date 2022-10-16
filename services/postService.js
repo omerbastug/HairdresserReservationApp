@@ -173,3 +173,16 @@ export function removeLike(req,res){
         res.json({success: "like deleted"})
     })
 }
+
+export function getLikes(req,res){
+    let id = JSON.parse(res.get("user")).id;
+    let q = `SELECT post_id FROM likes WHERE user_id = $1`;
+    sqlquery(q,[id],(err,data)=>{
+        if(err){ 
+            console.log(err);
+            return res.status(500).json({err:"database error"})
+        } else {
+            return res.json({likes : data.rows})
+        }
+    })
+}

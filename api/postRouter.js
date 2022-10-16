@@ -19,3 +19,5 @@ postRouter.patch("/homepage/switch",isUser,isAdmin,updateHomepage)
 postRouter.post("/like", isUser, likePost)
 
 postRouter.delete("/like", isUser, removeLike)
+
+postRouter.get("/my/likes", isUser, getLikes)
