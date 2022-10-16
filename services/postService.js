@@ -164,6 +164,13 @@ export function likePost(req,res){
                 return res.status(400).json({err:"post already liked"})
             }
             res.json({success:"post liked"})
+            let update = `UPDATE posts
+                    SET likecount = (SELECT COUNT(post_id) FROM likes WHERE post_id = $1)
+                    WHERE id = $2`;
+            sqlquery(update,[postid,postid],(err,data)=>{
+                if(err) console.log(err);
+                else console.log(data);
+            })
         })
     })
 }
