@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { postImage , getPosts, deletePost, updateHomepage, likePost, removeLike} from "../services/postService.js";
+import { postImage , getPosts, deletePost, updateHomepage, likePost, removeLike, getLikes} from "../services/postService.js";
 import { notStrict, isUser, isAdmin} from "../services/userService.js"
 
 const storage = multer.memoryStorage()
