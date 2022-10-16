@@ -113,6 +113,13 @@ export function deletePost(req,res){
         }
         //console.log(data.rows);
         res.json({"deletedRows": data.rows})
+        let update = `UPDATE posts
+                    SET likecount = (SELECT COUNT(post_id) FROM likes WHERE post_id = $1)
+                    WHERE id = $2`;
+        sqlquery(update,[postid,postid],(err,data)=>{
+            if(err) console.log(err);
+            else console.log(data);
+        })
     })
 }
 
