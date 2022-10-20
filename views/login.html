@@ -7,15 +7,11 @@
     <title>Login</title>
     <link rel="icon" href="/static/logo.png" />
 
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <!-- Bootstrap  -->
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <script src="/static/js/bootstrap.bundle.min.js"></script>
-    <script>
-        console.log("yo yo yo");
-    </script>
+
+
     <style>
       .divider:after,
       .divider:before {
@@ -44,7 +40,7 @@
             class="img-fluid" alt="Sample image">
         </div>
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-          <form>
+          <form id="loginform">
             <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
               <p class="lead fw-normal mb-0 me-3">Sign in with</p>
               <!-- <button type="button" class="btn btn-primary btn-floating mx-1">
@@ -71,15 +67,28 @@
             </div>
   
             <div class="text-center text-lg-start mt-4 pt-2">
-              <button type="button" class="btn btn-primary btn-lg"
+              <button id="submitbtnnn" type="submit" class="btn btn-primary btn-lg"
                 style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
               <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="#!"
                   class="link-danger">Register</a></p>
             </div>
           </form>
+          
         </div>
       </div>
     </div>
-  </section>     
+  </section>  
+   <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/jquery.validate.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script src="/static/js/loginService.js"></script>   
+
+  <script>
+    loginService.init()
+  </script>
 </body>
+
 </html>

@@ -179,3 +179,11 @@ export function isAdmin(req, res, next) {
         return res.status(403).json({ "err": "forbidden" })
     }
 }
+
+export function verifyUser(req,res) {
+    let user = JSON.parse(res.get("user"));
+    if(user.role_id === 1){
+        return res.json({"user": user})
+    }
+    res.status(400).json({err:"user not found"})
+}

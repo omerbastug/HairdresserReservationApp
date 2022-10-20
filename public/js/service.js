@@ -1,4 +1,5 @@
 let postsIDtoIndex = {};
+let user;
 const Service = {
     schedule : async () => {
         $("#schedule").hide()
@@ -98,7 +99,6 @@ const Service = {
             success : (data) => {
                 console.log("retrieved image data");
                 posts = data.posts;
-                console.log(posts);
                 let html = ""
                 for(let i = 0; i<posts.length; i++){
                     postsIDtoIndex[`${posts[i].id}`] = i;
@@ -251,6 +251,32 @@ const Service = {
             }
         })
     },
+    checkLoggedIn: async () =>{
+        let token = localStorage.token;
+        if(!token){
+            return;
+        }
+        $.ajax({
+            url: "user/isvalid",
+            type: "GET",
+            beforeSend: function(xhr){
+              xhr.setRequestHeader('Authorization', token);
+            },
+            success: function(data) {
+                user = data.users[0];
+                let loginbtn = $("#loginButton");
+                loginbtn.html("Logout")
+                loginbtn.click(()=>{
+                    localStorage.clear()
+                    location.reload()
+                })
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                toastr.error(XMLHttpRequest.responseJSON.message);
+                console.log(XMLHttpRequest.responseJSON.message);
+            }
+        })
+    }
 }
 
 
