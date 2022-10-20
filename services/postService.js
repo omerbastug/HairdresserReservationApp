@@ -185,6 +185,13 @@ export function removeLike(req,res){
             return res.status(400).json({err:"bad request"})
         }
         res.json({success: "like deleted"})
+        let update = `UPDATE posts
+                    SET likecount = (SELECT COUNT(post_id) FROM likes WHERE post_id = $1)
+                    WHERE id = $2`;
+        sqlquery(update,[postid,postid],(err,data)=>{
+            if(err) console.log(err);
+            else console.log(data);
+        })
     })
 }
 
