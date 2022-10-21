@@ -263,7 +263,7 @@ const Service = {
               xhr.setRequestHeader('Authorization', token);
             },
             success: function(data) {
-                user = data.users[0];
+                user = data.user;
                 let loginbtn = $("#loginButton");
                 loginbtn.html("Logout")
                 loginbtn.click(()=>{
