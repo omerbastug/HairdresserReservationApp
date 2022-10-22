@@ -182,7 +182,13 @@ const Service = {
                              </div>`
                    // Service.likepost(posts[i].id)
                 }
-                let likeajax = $.ajax({
+                $("#cardgroup").html(html)
+                const loggedIn = localStorage.getItem("loggedIn")
+                if(!loggedIn){
+                    $(".checkbox").prop('disabled', true);
+                    return
+                }
+                $.ajax({
                     url : "post/my/likes",
                     method: "GET",
                     beforeSend: function(xhr){
@@ -190,13 +196,10 @@ const Service = {
                     },
                     success : (data) => {
                         console.log("retrieved likes");    
-                    }
-                })
-                $("#cardgroup").html(html)
-                likeajax.then( data =>{
-                    for(let k = 0;k<data.likes.length; k++){
-                        let i = postsIDtoIndex[data.likes[k].post_id]
-                        $("#checkbox"+i).prop('checked', true);
+                        for(let k = 0;k<data.likes.length; k++){
+                            let i = postsIDtoIndex[data.likes[k].post_id]
+                            $("#checkbox"+i).prop('checked', true);
+                        }
                     }
                 })
                 $(document).ready(function () {
@@ -252,6 +255,7 @@ const Service = {
         })
     },
     checkLoggedIn: async () =>{
+        localStorage.removeItem("loggedIn")
         let token = localStorage.token;
         if(!token){
             return;
@@ -270,10 +274,12 @@ const Service = {
                     localStorage.clear()
                     location.reload()
                 })
+                localStorage.setItem("loggedIn",true)
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 toastr.error(XMLHttpRequest.responseJSON.message);
                 console.log(XMLHttpRequest.responseJSON.message);
+                localStorage.clear()
             }
         })
     }

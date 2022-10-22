@@ -20,6 +20,7 @@ var loginService = {
             success: function(result) {
               console.log(result);
               localStorage.setItem("token", result.token);
+              localStorage.setItem("loggedIn", true);
               if(!result.admin){
                 window.location.replace("/");
               } else {
