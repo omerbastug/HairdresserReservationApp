@@ -1,5 +1,9 @@
 let postsIDtoIndex = {};
 let user;
+let thisMonday = new Date();
+var first = thisMonday.getDate() - thisMonday.getDay() +1;
+thisMonday.setDate(first);
+thisMonday.setHours(0,0,0,0);
 const Service = {
     schedule : async () => {
         $("#schedule").hide()
@@ -35,20 +39,20 @@ const Service = {
         // first today row based on time
         if(day <= 6){
             html += `<div id="dow${day}" class="btn-group mr-2" role="group" aria-label="First group" style="flex-wrap: wrap;" >`
-            html += `<div class="container">${dow[day]}</div>`
+            html += `<div class="container"><strong>${dow[day]}</strong></div>`
             if(minute == 0){
-                html += `<button id="dow${day}time${hour+"-"+0}" type="button" class="btn btn-outline-info rounded-pill" style="margin: 5px;">${hour+":"+"00"}</button>`
-                html += `<button id="dow${day}time${hour+"-"+30}" type="button" class="btn btn-outline-info rounded-pill" style="margin: 5px;">${hour+":"+"30"}</button>`
-                hour++;
+                html += `<button id="dow${day}time${hour+"-"+0}" type="button" value="${day} ${hour} 0" class="btn btn-outline-info rounded-pill available" style="margin: 5px;">${hour+":"+"00"}</button>`
+                html += `<button id="dow${day}time${hour+"-"+30}" type="button" value="${day} ${hour} 30" class="btn btn-outline-info rounded-pill available" style="margin: 5px;">${hour+":"+"30"}</button>`
+                hour++; 
             } else if(minute < 30 && minute != 0){
-                html += `<button id="dow${day}time${hour+"-"+30}" type="button" class="btn btn-outline-info rounded-pill" style="margin: 5px;">${hour+":"+"30"}</button>`
+                html += `<button id="dow${day}time${hour+"-"+30}" type="button" value="${day} ${hour} 30" class="btn btn-outline-info rounded-pill available" style="margin: 5px;">${hour+":"+"30"}</button>`
                 hour++;
             } else {
                 hour++;
             }
             while(hour<17){
-                html += `<button id="dow${day}time${hour+"-"+0}" type="button" class="btn btn-outline-info rounded-pill" style="margin: 5px;">${hour+":"+"00"}</button>`
-                html += `<button id="dow${day}time${hour+"-"+30}" type="button" class="btn btn-outline-info rounded-pill" style="margin: 5px;">${hour+":"+"30"}</button>`
+                html += `<button id="dow${day}time${hour+"-"+0}" value="${day} ${hour} 0" type="button" class="btn btn-outline-info rounded-pill available" style="margin: 5px;">${hour+":"+"00"}</button>`
+                html += `<button id="dow${day}time${hour+"-"+30}" value="${day} ${hour} 30" type="button" class="btn btn-outline-info rounded-pill available" style="margin: 5px;">${hour+":"+"30"}</button>`
                 hour++;
             }
             html += "</div>"
@@ -58,16 +62,20 @@ const Service = {
         // other days of the week
         while(day<=6){
             html += `<div id="dow${day}" class="btn-group mr-2" role="group" aria-label="First group" style="flex-wrap: wrap;">`
-            html += `<div class="container">${dow[day]}</div>`
+            html += `<div class="container"><strong>${dow[day]}</strong></div>`
             while(hour<17){
-                html += `<button id="dow${day}time${hour+"-"+0}" type="button" class="btn btn-outline-info rounded-pill" style="margin: 5px;">${hour+":"+"00"}</button>`
-                html += `<button id="dow${day}time${hour+"-"+30}" type="button" class="btn btn-outline-info rounded-pill" style="margin: 5px;">${hour+":"+"30"}</button>`
+                html += `<button id="dow${day}time${hour+"-"+0}" type="button" value="${day} ${hour} 0" class="btn btn-outline-info rounded-pill available" style="margin: 5px;">${hour+":"+"00"}</button>`
+                html += `<button id="dow${day}time${hour+"-"+30}" type="button" value="${day} ${hour} 30" class="btn btn-outline-info rounded-pill available" style="margin: 5px;">${hour+":"+"30"}</button>`
                 hour++;
             }
-            html += "</div>"
+            html += `</div>`
             hour = 9;
             day++;
         }
+        html+=`
+        <div>
+            <button id="reserveButton" style="position:  relative;left: 100%; bottom: -1rem; margin-left: -100px;" class="btn btn-primary"> Reserve </button>
+        </div>`
         $("#schedule").html(html)
 
         //disable reserved times
@@ -78,10 +86,38 @@ const Service = {
                 date.setHours(date.getHours() - 2); // timezone configuration
                 let hour = date.getHours()
                 let minute = date.getMinutes()
-                $(`#dow${day}time${hour+"-"+minute}`).removeClass("btn-outline-info").addClass("btn-danger").attr("disabled","true")
+                $(`#dow${day}time${hour+"-"+minute}`).removeClass("btn-outline-info").addClass("btn-danger").removeClass("available").attr("disabled","true")
             }
         })
+        $('.btn-group').click(function(e){
+            let projected = e.target.value;
+            if(!projected || !$("#"+e.target.id).hasClass("available")) return;
+        
+            localStorage.setItem("projected",projected)
 
+            $(".available").removeClass("btn-success").addClass("btn-outline-info")
+
+            let button = $("#"+e.target.id)
+            button.removeClass("btn-outline-info").addClass("btn-success");
+        })
+        $("#reserveButton").click(()=>{
+            let projected = localStorage.getItem("projected")
+
+            if(!localStorage.getItem("loggedIn") || !projected) return toastr.error("Log in to make a reservation")
+
+            projected = projected.split(" ");
+
+            let day = parseInt(projected[0])
+            let hours = parseInt(projected[1])
+            let minutes = parseInt(projected[2])
+
+            let datetime = new Date(thisMonday)
+            datetime.setDate(datetime.getDate() + day - 1)
+            datetime.setHours(hours,minutes)
+            console.log(datetime.toUTCString());
+
+            makeReservation(datetime)
+        })
     },
     showSchedule : ()=>{
         if($("#schedule").is(":hidden")){
@@ -180,7 +216,6 @@ const Service = {
                                     </div>
                                 </div>
                              </div>`
-                   // Service.likepost(posts[i].id)
                 }
                 $("#cardgroup").html(html)
                 const loggedIn = localStorage.getItem("loggedIn")
@@ -285,5 +320,28 @@ const Service = {
     }
 }
 
+function makeReservation(datetime){
+    $.ajax({
+        url: "reservation",
+        type: "POST",
+        beforeSend: function(xhr){
+          xhr.setRequestHeader('Authorization', localStorage.getItem('token'));
+        },
+        contentType: 'application/json',
+        data: JSON.stringify({
+            datetime
+        }),
+        dataType: 'json',
+        success: function(data) {
+            console.log(data);
+            if(data.err){
+                return toastr.error(data.err);
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            toastr.error(XMLHttpRequest.responseJSON.message);
+        }
+    })
+}
 
 let dow = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
