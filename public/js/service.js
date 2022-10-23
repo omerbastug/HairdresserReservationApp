@@ -89,6 +89,8 @@ const Service = {
                 $(`#dow${day}time${hour+"-"+minute}`).removeClass("btn-outline-info").addClass("btn-danger").removeClass("available").attr("disabled","true")
             }
         })
+
+        // selecting time to reserve 
         $('.btn-group').click(function(e){
             let projected = e.target.value;
             if(!projected || !$("#"+e.target.id).hasClass("available")) return;
@@ -100,13 +102,22 @@ const Service = {
             let button = $("#"+e.target.id)
             button.removeClass("btn-outline-info").addClass("btn-success");
         })
-        $("#reserveButton").click(()=>{
-            let projected = localStorage.getItem("projected")
+        let projected = localStorage.getItem("projected")
+        console.log(projected);
+        if(projected){
+            projected = projected.split(" ");
+            console.log("#dow"+projected[0]+"time"+projected[1]+"-"+projected[2]);
+            $("#dow"+projected[0]+"time"+projected[1]+"-"+projected[2]).click()
+        }     
 
-            if(!localStorage.getItem("loggedIn") || !projected) return toastr.error("Log in to make a reservation")
+       // making the reservation
+        $("#reserveButton").click(()=>{
+            if(!localStorage.getItem("loggedIn")) return toastr.error("Log in to make a reservation")
+
+            let projected = localStorage.getItem("projected")
+            if(!projected) return toastr.error("Select a time for reservation")
 
             projected = projected.split(" ");
-
             let day = parseInt(projected[0])
             let hours = parseInt(projected[1])
             let minutes = parseInt(projected[2])
@@ -337,6 +348,7 @@ function makeReservation(datetime){
             if(data.err){
                 return toastr.error(data.err);
             }
+            toastr.success("Reservation made")
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             toastr.error(XMLHttpRequest.responseJSON.message);
