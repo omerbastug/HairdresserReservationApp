@@ -348,6 +348,7 @@ function makeReservation(datetime){
             if(data.err){
                 return toastr.error(data.err);
             }
+            localStorage.removeItem("projected")
             toastr.success("Reservation made")
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
