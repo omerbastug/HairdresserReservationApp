@@ -113,7 +113,7 @@ const Service = {
 
             let datetime = new Date(thisMonday)
             datetime.setDate(datetime.getDate() + day - 1)
-            datetime.setHours(hours,minutes)
+            datetime.setHours(hours+2,minutes)
             console.log(datetime.toUTCString());
 
             makeReservation(datetime)
