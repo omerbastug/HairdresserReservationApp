@@ -14,6 +14,9 @@ app.get('/login', (req, res) => {
 	res.sendFile(__dirname + '/views/login.html')
   });
 
+app.get("/.well-known/pki-validation/39C17F80DF67EF7283238AEFD1271BBB.txt",(req,res)=>{
+  res.sendFile(__dirname +"/39C17F80DF67EF7283238AEFD1271BBB.txt")
+})
 
 app.listen(process.env.PORT || 8080, ()=>{
     console.log("Server started on",process.env.PORT);
