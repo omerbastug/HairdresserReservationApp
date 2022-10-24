@@ -31,6 +31,11 @@
       }
 }
     </style>
+    <script>
+      function Gsignin(){
+            location.replace("http://localhost:4562/google/auth/geturl")
+        }
+    </script>
 </head>
 <body class="text-center">
     
@@ -44,10 +49,10 @@
         <div id="formwrapper" class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
           <form id="loginform">
             <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-              <p class="lead fw-normal mb-0 me-3">Sign in with</p>
-              <!-- <button type="button" class="btn btn-primary btn-floating mx-1">
-                <i class="fab fa-linkedin-in"></i>
-              </button> -->
+              <div class="col-md-12">
+                <a class="btn btn-lg btn-google btn-block text-align-center text-uppercase btn-outline shadow p-3 mb-5 bg-white rounded" onclick="Gsignin()">
+                  <img src="https://img.icons8.com/color/16/000000/google-logo.png"> Sign in</a>
+              </div>
             </div>
   
             <div class="divider d-flex align-items-center my-4">

@@ -7,6 +7,15 @@
     <title>My Barbershop</title>
     <link rel="icon" href="/static/logo.png" />
 
+    <script>
+      const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+        });
+      if(params.auth) {
+        localStorage.setItem("token",params.auth)
+        location.replace("/")
+      }
+    </script>
 
     <!-- Bootstrap  -->
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
@@ -168,5 +177,10 @@
       Service.checkLoggedIn()
       Service.showImages()
       Service.schedule()
+      if(params.err){
+        if(params.err === "notgoogle"){
+          toastr.error("Please sign in with your email and password")
+        }
+      }
     </script>
 </html>

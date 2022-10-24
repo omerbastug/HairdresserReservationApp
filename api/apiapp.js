@@ -3,6 +3,7 @@ export const app = express();
 import  { resrouter } from "./reservationRouter.js";
 import { userrouter } from "./userRouter.js"
 import { postRouter } from "./postRouter.js"
+import { googleAuthRouter } from "../services/googleAuthService.js"
 
 app.use(express.json());
 app.use((req,res,next)=>{
@@ -12,5 +13,6 @@ app.use((req,res,next)=>{
 
 app.use("/reservation",resrouter);
 app.use("/user/",userrouter);
-app.use("/post", postRouter)
+app.use("/post", postRouter);
+app.use("/google/auth", googleAuthRouter);
 app.use("/static",express.static('public'))

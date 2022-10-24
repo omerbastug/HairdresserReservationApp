@@ -138,9 +138,16 @@ export function login(req, res) {
             return res.sendStatus(500)
         }
         if (data.rowCount == 0) {
-            return res.status(400).json({ "err": "user not found" });
+            if(req.headers.googlecall === process.env.GOOGLE_CALL) return googleRegister(req,res)
+            else return res.status(400).json({ "err": "user not found" });
         }
         let dbuser = data.rows[0];
+
+        if(dbuser.googleUser) return googleLogin(dbuser,req,res)
+        else if(req.headers.googlecall === process.env.GOOGLE_CALL) {
+            return res.redirect(process.env.ROOT_URL+"/"+"?err=notgoogle")
+        }
+
         let hash = crypto.pbkdf2Sync(password, dbuser.salt, 1000, 64, `sha512`).toString(`hex`);
         if (hash != dbuser.hash) {
             return res.status(400).json({ "err": "incorrect password" })
@@ -150,6 +157,45 @@ export function login(req, res) {
     })
 }
 
+function googleLogin(user,req,res){
+    if(req.headers.googlecall != process.env.GOOGLE_CALL) { 
+         return res.status(400).json({err:"sign in with google"})
+    }
+    let {id,email} = user;
+    let tokendata = {
+        id,
+        email,
+        role_id : 1
+    }
+    let token = jwt.sign({user : tokendata}, process.env.JWT_SECRET);
+    res.redirect(process.env.ROOT_URL+"/"+"?auth="+token)
+}
+
+function googleRegister(req,res){
+    let {email,name} = req.body;
+    let params = {
+        email,
+        fullname : name,
+        googleUser : true,
+        salt : "google",
+        hash : "google",
+        role_id : 1
+    }
+    userDao.add(params,(err,data)=>{
+        if(err){
+            console.log(err);
+            return res.sendStatus(500)
+        }
+        let tokendata = {
+            id : data.id,
+            email,
+            role_id : 1
+        }
+        let token = jwt.sign({user : tokendata}, process.env.JWT_SECRET);
+        res.redirect(process.env.ROOT_URL+ "/" + "?auth="+token)
+        // res.json({success:"user created",data})
+    })
+}
 export function isUser(req, res, next) {
     const token = req.headers["authorization"];
     let decoded;
