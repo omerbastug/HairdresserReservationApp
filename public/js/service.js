@@ -34,6 +34,7 @@ const Service = {
             day = 1;
             hour = 9;
             minute = 0;
+            thisMonday.setDate(thisMonday.getDate() + 7)
         }
         let html = "";
         // first today row based on time
