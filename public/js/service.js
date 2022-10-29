@@ -84,8 +84,7 @@ const Service = {
             for(let i = 0; i< reservations.length; i++){
                 let date = new Date(reservations[i].datetime);
                 let day = date.getDay()
-                date.setHours(date.getHours());
-                let hour = date.getHours()
+                let hour = date.getHours() - 2
                 let minute = date.getMinutes()
                 $(`#dow${day}time${hour+"-"+minute}`).removeClass("btn-outline-info").addClass("btn-danger").removeClass("available").attr("disabled","true")
             }
@@ -125,7 +124,7 @@ const Service = {
 
             let datetime = new Date(thisMonday)
             datetime.setDate(datetime.getDate() + day - 1)
-            datetime.setHours(hours,minutes)
+            datetime.setHours(hours+1,minutes)
             console.log(datetime.toUTCString());
 
             makeReservation(datetime)
