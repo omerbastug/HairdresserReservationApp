@@ -84,7 +84,7 @@ const Service = {
             for(let i = 0; i< reservations.length; i++){
                 let date = new Date(reservations[i].datetime);
                 let day = date.getDay()
-                let hour = date.getHours() - 2
+                let hour = date.getHours() - 1
                 let minute = date.getMinutes()
                 $(`#dow${day}time${hour+"-"+minute}`).removeClass("btn-outline-info").addClass("btn-danger").removeClass("available").attr("disabled","true")
             }
