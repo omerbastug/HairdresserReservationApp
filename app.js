@@ -14,8 +14,8 @@ app.get('/login', (req, res) => {
 	res.sendFile(__dirname + '/views/login.html')
   });
 
-app.get("/.well-known/pki-validation/89C3F17754AC08AE6152608E9067C78D.txt",(req,res)=>{
-  res.sendFile(__dirname +"/89C3F17754AC08AE6152608E9067C78D.txt")
+app.get("/.well-known/pki-validation/762F0E791CAD1C3D1A7F3B34346BB20C.txt",(req,res)=>{
+  res.sendFile(__dirname +"/762F0E791CAD1C3D1A7F3B34346BB20C.txt")
 })
 
 app.listen(process.env.PORT || 8080, ()=>{
