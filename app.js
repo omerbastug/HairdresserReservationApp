@@ -14,11 +14,8 @@ app.get('/login', (req, res) => {
 	res.sendFile(__dirname + '/views/login.html')
   });
 
-app.get("/.well-known/pki-validation/762F0E791CAD1C3D1A7F3B34346BB20C.txt",(req,res)=>{
-  res.sendFile(__dirname +"/762F0E791CAD1C3D1A7F3B34346BB20C.txt")
-})
-app.get("/.well-known/pki-validation/3BE8E9A5FCE6C59E090422AEAEFF475D.txt",(req,res)=>{
-  res.sendFile(__dirname +"/3BE8E9A5FCE6C59E090422AEAEFF475D.txt")
+app.get("/.well-known/pki-validation/82DCDF4BE6202C10720C2786FBCF0515.txt",(req,res)=>{
+  res.sendFile(__dirname +"/82DCDF4BE6202C10720C2786FBCF0515.txt")
 })
 
 app.listen(process.env.PORT || 8080, ()=>{
