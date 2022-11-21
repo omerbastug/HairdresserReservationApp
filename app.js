@@ -17,6 +17,9 @@ app.get('/login', (req, res) => {
 app.get("/.well-known/pki-validation/762F0E791CAD1C3D1A7F3B34346BB20C.txt",(req,res)=>{
   res.sendFile(__dirname +"/762F0E791CAD1C3D1A7F3B34346BB20C.txt")
 })
+app.get("/.well-known/pki-validation/3BE8E9A5FCE6C59E090422AEAEFF475D.txt",(req,res)=>{
+  res.sendFile(__dirname +"/3BE8E9A5FCE6C59E090422AEAEFF475D.txt")
+})
 
 app.listen(process.env.PORT || 8080, ()=>{
     console.log("Server started on",process.env.PORT);
